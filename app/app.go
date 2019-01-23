@@ -1,5 +1,5 @@
 package main
-
+// Temporary root app file for testing basic api functionality
 import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
@@ -25,3 +25,4 @@ func main() {
 	}
 
 	http.ListenAndServe(":8080", router)
+}
