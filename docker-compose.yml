@@ -1,0 +1,33 @@
+version: '3.6'
+
+services:
+    dbs:
+        image: mysql
+        build:
+            dockerfile: Dockerfile.database
+            context: .
+        ports:
+            - 3306:3306
+        security_opt:
+              - seccomp:unconfined
+        environment:
+            - "MYSQL_ROOT_PASSWORD=root"
+            - "MYSQL_DATABASE=symp_internal"
+        volumes:
+            - ./sql-startup/:/docker-entrypoint-initdb.d/
+    symp:
+        image: symp:latest
+        build:
+            dockerfile: Dockerfile.goapp
+            context: .
+        ports:
+            - 8000:8000
+        links:
+            - dbs:dbs
+        environment:
+            - DB_HOST=dbs
+            - "DB_PORT=3306"
+            - "JWT_PASS=longAndOriginalPassword" # TODO: move this to .env file to prevent it from being public
+            - "DB_NAME=symp_internal"
+        volumes:
+            - ./:/go/src/github.com/ondrax/sympinator-be/

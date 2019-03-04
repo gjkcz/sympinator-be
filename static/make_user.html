@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sympinator login</title>
+</head>
+<body>
+	<form action="/make_user" method="POST">
+		Vyrobit uživtele: <br />
+		<div>
+			<!-- TODO: IF CURRENT_USER_CAN("MAKE_USER") -->
+		</div>
+		<input id="user-name" type="text" name="user-name"> <br />
+		<input id="user-real-name" type="text" name="user-real-name"> <br />
+		<input id="user-pass" type="text" name="user-pass"> <br />
+		<input id="user-pass-confirm" type="text" name="user-pass-confirm"> <br />
+		<input id="user-email" type="text" name="user-email"> <br />
+		<input id="user-role" type="text" name="user-role"> <br />
+			<!-- TODO: this should be select which GETs available user roles -->
+		<input type="submit" value="Odeslat">
+	</form>
+</body>
+</html>
