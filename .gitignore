@@ -1,5 +1,6 @@
 vendor
 vendor/*
+/api
 .lvimrc
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
