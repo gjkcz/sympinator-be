@@ -1,0 +1,12 @@
+# vim: ft=dockerfile:
+FROM golang:1.11
+
+WORKDIR /go/src/github.com/ondrax/sympinator-be/
+
+COPY . .
+
+RUN go get ./...
+# RUN go build ./code/api
+
+RUN go get github.com/githubnemo/CompileDaemon
+ENTRYPOINT CompileDaemon -log-prefix=false -build="go build ./code/api/" -command="./api" -include="*.html" -include="*.js"

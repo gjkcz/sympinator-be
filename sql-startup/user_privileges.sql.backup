@@ -1,0 +1,70 @@
+CREATE TABLE IF NOT EXISTS `users`
+(
+	`id` int PRIMARY KEY AUTO_INCREMENT,
+	`name` varchar(255) UNIQUE,
+	`real_name` varchar(255),
+	`email` varchar(255),
+	`created_at` datetime,
+	`role` varchar(32),
+	`pass_hash` varchar(255)
+);
+
+-- currently exists for validation purposes only
+CREATE TABLE IF NOT EXISTS `privileges`
+(
+	`name` varchar(32) PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS `roles`
+(
+	`name` varchar(32) PRIMARY KEY,
+	`human_name` varchar(255),
+	`next_subordinate` varchar(32)
+
+);
+ALTER TABLE `roles` ADD FOREIGN KEY (`next_subordinate`) REFERENCES `roles` (`name`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `users` ADD FOREIGN KEY (`role`) REFERENCES `roles` (`name`);
+
+CREATE TABLE IF NOT EXISTS `privileges_by_role`
+(
+	`priv` varchar(32),
+	`role` varchar(32)
+);
+ALTER TABLE `privileges_by_role` ADD FOREIGN KEY (`priv`) REFERENCES `privileges` (`name`);
+ALTER TABLE `privileges_by_role` ADD FOREIGN KEY (`role`) REFERENCES `roles` (`name`);
+
+
+-- Create the data
+INSERT INTO `roles` (name,human_name,next_subordinate) VALUES ('USER','Uživatel','USER');
+INSERT INTO `roles` (name,human_name,next_subordinate) VALUES ('ADMIN','Administrátor','USER');
+
+INSERT INTO `privileges` (name)
+VALUES ('CAN_MAKE_USERS');
+INSERT INTO `privileges` (name)
+VALUES ('CAN_ADD_LECTURES');
+INSERT INTO `privileges` (name)
+VALUES ('CAN_ADD_SPEAKERS');
+INSERT INTO `privileges` (name)
+VALUES ('CAN_EDIT_TIMETABLE');
+
+-- Administrator permissions
+INSERT INTO `privileges_by_role` (role,priv)
+VALUES ('ADMIN','CAN_MAKE_USERS');
+INSERT INTO `privileges_by_role` (role,priv)
+VALUES ('ADMIN','CAN_EDIT_TIMETABLE');
+INSERT INTO `privileges_by_role` (role,priv)
+VALUES ('ADMIN','CAN_ADD_LECTURES');
+INSERT INTO `privileges_by_role` (role,priv)
+VALUES ('ADMIN','CAN_ADD_SPEAKERS');
+-- User permissions
+INSERT INTO `privileges_by_role` (role,priv)
+VALUES ('USER','CAN_ADD_LECTURES');
+INSERT INTO `privileges_by_role` (role,priv)
+VALUES ('USER','CAN_ADD_SPEAKERS');
+
+INSERT INTO `users` ( name, real_name, email, created_at, role, pass_hash)
+VALUES ('admin', 'Admin', 'admin@symp.com', NOW(), 'ADMIN', '$2a$10$7qP4gcRLkY.h4WB.XfmX7eXGP/4tIPw78C9EuczfO9ChKEzAvaga2');
+
+INSERT INTO `users` ( name, real_name, email, created_at, role, pass_hash)
+VALUES ('user', 'User', 'user@symp.com', NOW(), 'USER', '$2a$10$3EE5.97bIlpDtHUL.EA7h.dk54AGI4Tbl/bIGWK68EUySu/2QtajW');
+
