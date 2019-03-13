@@ -15,19 +15,21 @@ services:
             - "MYSQL_DATABASE=symp_internal"
         volumes:
             - ./sql-startup/:/docker-entrypoint-initdb.d/
-    symp:
-        image: symp
-        build:
-            dockerfile: Dockerfile.goapp
-            context: .
-        ports:
-            - 8000:8000
-        links:
-            - symp-db:dbs
-        volumes:
-            - ./:/go/src/github.com/ondrax/sympinator-be/
-        environment:
-            - DB_HOST=dbs
-            - "DB_PORT=3306"
-            - "JWT_PASS=a4fJqmz/0x9#2Aea(aQQ12uJ9_oP" # TODO: move this to .env file to prevent it from being a public part of the config
-            - "DB_NAME=symp_internal"
+            - ./mysql-conf/mysql.cnf:/etc/mysql/conf.d/own.cnf
+            # - ./mysql-conf/my.cnf:/etc/mysql/my.conf
+    # symp:
+    #     image: symp
+    #     build:
+    #         dockerfile: Dockerfile.goapp
+    #         context: .
+    #     ports:
+    #         - 8000:8000
+    #     links:
+    #         - symp-db:dbs
+    #     volumes:
+    #         - ./:/go/src/github.com/ondrax/sympinator-be/
+    #     environment:
+    #         - DB_HOST=dbs
+    #         - "DB_PORT=3306"
+    #         - "JWT_PASS=a4fJqmz/0x9#2Aea(aQQ12uJ9_oP" # TODO: move this to .env file to prevent it from being a public part of the config
+    #         - "DB_NAME=internal"

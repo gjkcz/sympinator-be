@@ -1,0 +1,59 @@
+// {{{
+//
+// }}}
+SELECT u.id as Person, u.name as Person_name FROM `users` u
+WHERE u.id NOT IN (
+SELECT u.id FROM `users` u
+	INNER JOIN `collections_by_users` r ON r.users_id = u.id
+	INNER JOIN `collections` c ON r.collections_id = c.id
+	WHERE c.hierarchy_pos <= (
+		SELECT MIN(c.hierarchy_pos) FROM `users` u
+		INNER JOIN `collections_by_users` r ON r.users_id = u.id
+		INNER JOIN `collections` c ON r.collections_id = c.id
+		WHERE u.id = 4
+	)
+);
+
+// OLD USERMAKEHANDLER
+
+			r.ParseForm()
+			// validation
+			if ( r.Form["user-pass"][0] != r.Form["user-pass-confirm"][0] ){ // this would ideally be done asynchronously during password entry on front-end, but this is easier
+				makeMessage(false,"passwords don't match")
+			}
+			//e-mail: contains @ followed by at least one dot
+			email := r.Form["user-email"][0]
+			if (strings.Contains(email,"@")){
+				splitEmail := strings.SplitAfter(email,"@")
+				if(strings.Contains(splitEmail[1],".") && len(splitEmail[0]) > 1) {// todo: use some well-known regex to test for valid domain name perhaps
+					makeMessage(false,"e-mail address invalid")
+				}
+			}
+
+			hashedPass,err := saltedHash([]byte(r.Form["user-pass"][0]))
+			log.Println(hashedPass)
+
+			if ( err != nil){ // this would ideally be done asynchronously during password entry on front-end, but this is easier
+				makeMessage(false,"error handling password: "+err.Error())
+			}
+
+			userData := UserData{
+				r.Form["user-name"][0],
+				r.Form["user-real-name"][0],
+				r.Form["user-email"][0],
+				time.Now(),
+				hashedPass,
+			}
+			addNewUser(userData)
+
+
+// THIS IS CODE TO RETRIEVE user object
+// todo: maybe move to xo
+	// result, err = utils.QuerySQLConn(DBNAME,"SELECT (id, name, real_name, email, created_at, pass_hash) FROM users WHERE `id`= (LAST_INSERT_ID())")
+	// // HERE
+	// newUser := UserData{}
+	// ok := result.Next()
+	// if !ok {
+	// 	log.Println("INSERT unsuccessful")
+	// }
+	// result.Scan(&newUser.ID,&newUser.Name,&newUser.RealName,&newUser.Email,&newUser.CreatedAt,&newUser.PassHash)

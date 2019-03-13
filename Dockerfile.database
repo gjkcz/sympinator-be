@@ -5,3 +5,4 @@ FROM mysql
 ENV MYSQL_DATABASE symp_internal
 # exec all scripts from sql-startup on database's startup
 COPY ./sql-startup/ /docker-entrypoint-initdb.d/
+EXPOSE 3306

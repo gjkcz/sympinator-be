@@ -1,5 +1,8 @@
 vendor
 vendor/*
+.notes
+*.log
+*.logs
 /api
 .lvimrc
 [._]*.s[a-v][a-z]

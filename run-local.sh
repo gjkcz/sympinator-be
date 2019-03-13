@@ -1,0 +1,3 @@
+#!/bin/bash
+go get ./...
+CompileDaemon -log-prefix=false -build="go build ./code/api/" -command="./api" -include="*.html" -include="*.js"

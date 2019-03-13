@@ -5,11 +5,15 @@ Maturitní projekt Ondry Tkaczyszyna.
 Momentálně v naprosto nefunkčním stavu, ale už notnou chvíli na to nekašlu.
 **Co to má dělat:** TODO upload pdf se specifikacema
 
+
 ## Prerekvizity ke spuštění
-1. `docker`, `docker-compose`
+1. `docker`,`docker-compose`
 2. (`make`) — momentálně pro pohodlnost — lze se tomu vyhnout
 3. shell
 
+Hypotheticky by to mělo fungovat jako lokální build,
+pak by mohlo stačit mít `go` a `npm` a pustit
+```
 
 ### Stažení
 ```

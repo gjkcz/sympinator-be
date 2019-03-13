@@ -8,6 +8,7 @@ import(
 	"time"
 	"errors"
 	"net/http"
+	_ "github.com/nu7hatch/gouuid"
 	utils "github.com/ondrax/sympinator-be/code/utils"
 )
 
@@ -19,21 +20,21 @@ type TokenClaims struct {
 var signKey []byte = []byte("")
 
 // {{{ Authentication router middleware -- requires sending of token on each access request
-func JWTAuthMiddleware(next http.Handler) http.HandlerFunc {
+func JWTAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		exceptions := []string{"/","/login"}
+		exceptions := []string{"/","/login","/register"}
 		path := r.URL.Path
 
 		for _,ex := range exceptions { // don't check exceptions for auth tokens -- we want to be able to log a user in or create one (maybe)
 			if ex == path {
-				log.Println("loading page with authentication exception")
+				log.Println("=\nloading page with authentication exception\n=\n")
 				next.ServeHTTP(w,r)
 				return
 			}
 		}
 
-		tokenString := r.Header.Get("AuthToken")
+		tokenString := r.Header.Get("Authorization")
 
 		if tokenString == "" {
 			response := AuthResponse{false,"no token provided"}
@@ -82,7 +83,7 @@ func JWTAuthMiddleware(next http.Handler) http.HandlerFunc {
 		// check if authentication token is present
 
 		log.Println("auth BEFORE")
-		next.ServeHTTP(w,r)
+		next(w,r)
 		log.Println("auth AFTER")
 	})
 }

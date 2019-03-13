@@ -5,7 +5,7 @@
 	<title>Sympinator login</title>
 </head>
 <body>
-	<form action="/make_user" method="POST">
+	<form action="#" method="POST">
 		Vyrobit uživtele: <br />
 		<div>
 			<!-- TODO: IF CURRENT_USER_CAN("MAKE_USER") -->
@@ -15,8 +15,8 @@
 		<input id="user-pass" placeholder="user-pass" type="text" name="user-pass"> <br />
 		<input id="user-pass-confirm" placeholder="user-pass-confirm" type="text" name="user-pass-confirm"> <br />
 		<input id="user-email" placeholder="user-email" type="text" name="user-email"> <br />
-		<input id="user-role" placeholder="user-role" type="text" name="user-role"> <br />
-			<!-- TODO: this should be select which GETs available user roles -->
+			<!-- TODO: list available groups, allow multiple input -->
+		<!-- <input id="user&#45;role" placeholder="user&#45;role" type="text" name="user&#45;role"> <br /> -->
 		<input type="submit" value="Odeslat">
 	</form>
 </body>

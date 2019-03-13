@@ -15,29 +15,44 @@ import (
 */
 
 func QuerySQLConn(dbname string, query string,queryVars ...interface{}) (*sql.Rows, error) {
-	hostname := os.Getenv("DB_HOST")+":"+os.Getenv("DB_PORT")
-	// TODO: figure out how to securely connect to my own created database (no root/root password)
-	db, err := sql.Open("mysql", "root:root@tcp("+hostname+")/"+dbname)
-
-	if (err != nil) {
-		log.Println("Could not connect to specified database; Error: ",err)
-		db.Close()
-		return nil, err
+			// {{{ database copypasta
+    hostname := os.Getenv("DB_HOST")+":"+os.Getenv("DB_PORT")
+	// dbname := os.Getenv("DB_NAME")
+    if os.Getenv("DB_HOST") == "" || os.Getenv("DB_PORT") == "" {
+        log.Println("could not find global host or port env variable")
+        hostname = "localhost:3306"
+    } else {
+        log.Println("HOSTNAME",hostname)
+    }
+	if dbname == "" {
+        log.Println("could not find global db name env variable")
+        hostname = "localhost:3306"
+    } else {
+        log.Println("HOSTNAME",hostname)
 	}
+    // TODO: figure out how to securely connect to my own created database (no root/root password)
+    db, err := sql.Open("mysql", "root:root@tcp("+hostname+")/"+"internal?parseTime=true")
+    if err != nil {
+        log.Println("ERROR OPENING DATABASE CONNECTION")
+        panic(err.Error())
+    }
+    err = db.Ping()
+    if err != nil {
+        log.Println("ERROR CONNECTING TO DATABASE")
+        panic(err.Error())
+    }
+// }}}
 	resultRows, err := db.Query(query, queryVars...)
-
 	if (err != nil) {
 		log.Println("Error while executing query: ",err)
-		db.Close()
 		return nil, err
 	}
 
-	defer db.Close() // TODO: apparently there is no reason to keep closing and re-opening
 	return resultRows, err
 }
 // }}}
 
-// PrintQueryResult(writer, rows *sql.Rows) {{{ helper func to dump mysql query results
+// {{{ helper func to dump mysql query results
 func PrintQueryResult(w io.Writer,rows *sql.Rows) {
 
 	// Stolen for convenience from stackoverflow answerhttps://stackoverflow.com/a/14500756
@@ -57,7 +72,6 @@ func PrintQueryResult(w io.Writer,rows *sql.Rows) {
 		dest[i] = &rawResult[i] // Put pointers to each string in the interface slice
 	}
 	for rows.Next() {
-		fmt.Println("printing row");
 		err = rows.Scan(dest...)
 		if err != nil {
 			fmt.Println("Failed to scan row", err)

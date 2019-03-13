@@ -1,0 +1,59 @@
+%vim:ft=tex:foldmethod=marker:foldmarker={{{,}}}:foldlevel=2:sw=4
+\documentclass[10pt,a4paper]{memoir}
+%{{{ NON-CONTENT
+%{{{ PACKAGES
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{lmodern}
+%}}}
+%{{{ CUSTOM DEFINITIONS
+%}}}
+
+\author{Ondřej Tkaczyszyn}
+\date{\today}
+
+\begin{document}
+\maketitle
+%}}}
+\chapter{O projektu}
+\section{Bezpečnost}
+\subsection{Uživatelské účty}
+\begin{enumerate}
+	\item hesla se ukládají zahashována standardně metodou bcrypt2 (salted)
+	\item mezi frontendem a backendem se však posílají nezahashovaná,
+		pročež aby byla aplikace skutečně bezpečná, potřebovala by fungovat přes
+		SSL (hashovat na frontendu bez SSL není moc co k čemu)
+	\item autentifikace s uživatelem se řeší tak, že se na backendu zkontroluje
+		správnost zadaného hashe v kombinaci s uživatelským jménem, na základě čehož
+		se člověku pošle \textsc{token} obsahující ID uživatele, který potom frontend
+		posílá v hlavičce ke každému requestu na API — pokud není v hlavičce token přítomen
+		A uživatel, k němuž token náleží, nedisponuje náležitými pravomocemi,
+		request se nezpracuje a frontend dostane 403, % TODO zkontrolovat správnost error kodub
+		načež si uvědomí, že nějakým způsobem pozbyl autentifikovanosti a odhlásí se.
+		Data, ke kterým nemá náležitá privilegia, frontend nikdy od serveru neobdrží.
+\end{enumerate}
+\subsection{Server a databáze}
+\begin{enumerate}
+	\item proti SQL Injection má chránit golang SQL Driver — řeší zpracovávání
+		query řetězců na úrovni, ke které se ani nedostanu
+	\item protože validace některých dat probíhá na frontendu i backendu
+		pomocí regexů, mohl by nás někdo vytrestat obzvlášť vypečeným řetězcem
+		třeba uživ. jména, pokud by regexy byly špatně napsané, k tomu toto:
+\begin{ enumerate}
+	   \item tady se golang opět zaručuje, že jeho regexy poběží vdy v $O(n)$ s délkou vstupu
+		   (kompilační čas je věc druhá)
+		\item není jich tam mnoho a ty, které tam jsou, jsem pro jistotu někomu ukradl
+		\item dala by se omezit délka řetězců, ale $O(k^n)$ roste opravdu rychle
+			a my nemůžeme uživatele omezovat natolik
+\end{ enumerate}
+\end{enumerate}
+
+
+\chapter{Dokumentace endpointů}
+\end{document}
